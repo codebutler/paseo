@@ -148,6 +148,9 @@ const CLAUDE_SETTING_SOURCES: NonNullable<ClaudeOptions["settingSources"]> = [
   "local",
 ];
 
+/** Hook events Claude streams without `includeHookEvents`. */
+const SELF_REPORTING_CLAUDE_HOOK_EVENTS = new Set(["SessionStart", "Setup"]);
+
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value : null;
 }
@@ -4265,9 +4268,63 @@ class ClaudeAgentSession implements AgentSession {
       this.appendTaskNotificationEvents(message, events);
       return;
     }
+    if (message.subtype === "hook_response") {
+      this.appendHookFailureEvents(message, events);
+      return;
+    }
     if (message.subtype === "task_progress") {
       return;
     }
+  }
+
+  /**
+   * A hook that fails leaves its job undone: an installer that never ran, a
+   * safety check that never checked. Claude reports it and carries on, so
+   * surface it instead of losing it.
+   *
+   * A non-zero exit is not enough to detect one, because a setup hook usually
+   * hides its own failure. `command -v foo || install foo || echo 'no foo' >&2`
+   * ends with a successful `echo`, so Claude reports exit code 0 and outcome
+   * "success" while the only evidence sits in stderr. For SessionStart and
+   * Setup, stderr therefore counts on its own. Those hooks run once per
+   * session, and Claude streams those two events even when
+   * `includeHookEvents` is off.
+   *
+   * Every other event still needs a real failure. A tool hook runs on every
+   * tool call and writes to stderr in normal operation, so its stderr proves
+   * nothing. Nothing sends those events today; the distinction matters only
+   * if someone turns `includeHookEvents` on later.
+   */
+  private appendHookFailureEvents(
+    message: Extract<SDKMessage, { type: "system"; subtype: "hook_response" }>,
+    events: AgentStreamEvent[],
+  ): void {
+    const stderr = readNonEmptyString(message.stderr)?.trim();
+    const failed = message.outcome === "error" || (message.exit_code ?? 0) !== 0;
+    const warned =
+      stderr !== undefined && SELF_REPORTING_CLAUDE_HOOK_EVENTS.has(message.hook_event);
+    if (!failed && !warned) {
+      return;
+    }
+    const detail = stderr ?? readNonEmptyString(message.output)?.trim();
+    const label = readNonEmptyString(message.hook_name) ?? message.hook_event;
+    this.logger.warn(
+      {
+        hookName: message.hook_name,
+        hookEvent: message.hook_event,
+        exitCode: message.exit_code,
+        outcome: message.outcome,
+        stderr: message.stderr,
+      },
+      failed ? "Claude hook failed" : "Claude hook reported a warning",
+    );
+    const summary = failed ? "failed" : "reported";
+    const suffix = detail ? `: ${detail}` : "";
+    events.push({
+      type: "timeline",
+      item: { type: "error", message: `Hook ${label} ${summary}${suffix}` },
+      provider: "claude",
+    });
   }
 
   private appendTaskNotificationEvents(
