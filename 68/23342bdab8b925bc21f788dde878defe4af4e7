@@ -1,0 +1,29 @@
+packages/app/src/agent-stream/view.tsx
+  s_3452bb4b14aa7b::t_9cf3a7752e6815 1357,1540-1545
+packages/server/src/server/agent/agent-sdk-types.ts
+  s_3452bb4b14aa7b::t_276e12ed64bdca 483
+packages/protocol/src/agent-types.ts
+  s_3452bb4b14aa7b::t_346402c8a7f566 435
+packages/server/src/server/agent/providers/claude/agent.ts
+  s_3452bb4b14aa7b::t_9508036bb192ca 4599
+packages/server/src/server/agent/providers/claude/agent.test.ts
+  s_3452bb4b14aa7b::t_f36ff0bfa82e23 712-747
+packages/protocol/src/messages.ts
+  s_3452bb4b14aa7b::t_e94d5921894e8e 503
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6823342bdab8b925bc21f788dde878defe4af4e7",
+  "prompts": {},
+  "sessions": {
+    "s_3452bb4b14aa7b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "71d2fbf6-7495-40f4-88c8-88fb07ea2923",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
