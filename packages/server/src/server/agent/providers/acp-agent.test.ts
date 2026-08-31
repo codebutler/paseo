@@ -41,6 +41,7 @@ import {
   transformCopilotSessionResponse,
   writeCopilotProviderMode,
 } from "./copilot-acp-agent.js";
+import { CURSOR_FAST_FEATURE_OPTION } from "./cursor-acp-agent.js";
 import { GenericACPAgentClient } from "./generic-acp-agent.js";
 import { parseKiroExtensionCommands } from "./kiro-acp-agent.js";
 import { transformPiModels } from "./pi/agent.js";
@@ -1635,6 +1636,63 @@ describe("ACPAgentSession Zed parity", () => {
       expect.objectContaining({
         id: "agent",
         value: "Probe Agent",
+      }),
+    ]);
+  });
+
+  test("setFeature accepts boolean values for Cursor fast mode", async () => {
+    const fastConfigOption = {
+      id: "fast",
+      name: "Fast",
+      type: "select" as const,
+      currentValue: "false",
+      options: [
+        { value: "false", name: "Off" },
+        { value: "true", name: "Fast" },
+      ],
+    };
+    const setSessionConfigOption = vi.fn(async () => ({
+      configOptions: [{ ...fastConfigOption, currentValue: "true" }],
+    }));
+    const session = new ACPAgentSession(
+      { provider: "cursor", cwd: "/tmp/cursor" },
+      {
+        provider: "cursor",
+        logger: createTestLogger(),
+        defaultCommand: ["cursor-agent", "acp"],
+        defaultModes: [],
+        configFeatureOptions: [CURSOR_FAST_FEATURE_OPTION],
+        capabilities: {
+          supportsStreaming: true,
+          supportsSessionPersistence: true,
+          supportsDynamicModes: true,
+          supportsMcpServers: true,
+          supportsReasoningStream: true,
+          supportsToolInvocations: true,
+        },
+      },
+    );
+    prepareConfiguredOverrideSession(session, {
+      configOptions: [fastConfigOption],
+      connection: { setSessionConfigOption },
+    });
+
+    await session.setFeature("fast_mode", true);
+
+    expect(setSessionConfigOption).toHaveBeenCalledWith({
+      sessionId: "session-1",
+      configId: "fast",
+      value: "true",
+    });
+    expect(session.features).toEqual([
+      expect.objectContaining({
+        id: "auto_accept",
+        value: false,
+      }),
+      expect.objectContaining({
+        id: "fast_mode",
+        type: "toggle",
+        value: true,
       }),
     ]);
   });

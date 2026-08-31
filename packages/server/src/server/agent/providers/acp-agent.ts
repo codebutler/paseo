@@ -724,19 +724,41 @@ export function deriveFeaturesFromACP(
       return [];
     }
 
-    return [
-      {
-        type: "select",
-        id: featureOption.id,
-        label: featureOption.label,
-        description: featureOption.description,
-        tooltip: featureOption.tooltip,
-        icon: featureOption.icon,
-        value: option.currentValue ?? null,
-        options: deriveConfigFeatureSelectOptions(option, featureOption),
-      },
-    ];
+    return [deriveACPConfigFeature(option, featureOption)];
   });
+}
+
+function deriveACPConfigFeature(
+  option: SelectConfigOption,
+  featureOption: ACPConfigFeatureOption,
+): AgentFeature {
+  if (isBinaryTrueFalseConfigOption(option)) {
+    return {
+      type: "toggle",
+      id: featureOption.id,
+      label: featureOption.label,
+      description: featureOption.description,
+      tooltip: featureOption.tooltip,
+      icon: featureOption.icon,
+      value: option.currentValue === "true",
+    };
+  }
+
+  return {
+    type: "select",
+    id: featureOption.id,
+    label: featureOption.label,
+    description: featureOption.description,
+    tooltip: featureOption.tooltip,
+    icon: featureOption.icon,
+    value: option.currentValue ?? null,
+    options: deriveConfigFeatureSelectOptions(option, featureOption),
+  };
+}
+
+function isBinaryTrueFalseConfigOption(option: SelectConfigOption): boolean {
+  const values = new Set(flattenSelectOptions(option.options).map((choice) => choice.value));
+  return values.size === 2 && values.has("true") && values.has("false");
 }
 
 function isACPAutoAcceptEnabled(config: AgentSessionConfig): boolean {
@@ -3093,6 +3115,9 @@ function normalizeConfigFeatureOptionLabel(
 function normalizeConfigFeatureValue(value: unknown): string {
   if (typeof value === "string") {
     return value;
+  }
+  if (typeof value === "boolean") {
+    return value ? "true" : "false";
   }
   if (value === null) {
     return "";

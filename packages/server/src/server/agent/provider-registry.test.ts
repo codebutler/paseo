@@ -411,11 +411,10 @@ vi.mock("./providers/cursor-acp-agent.js", () => ({
       mockState.cursorListFeaturesConfigs.push(config);
       return [
         {
-          type: "select",
-          id: "fast",
+          type: "toggle",
+          id: "fast_mode",
           label: "Fast",
-          value: "false",
-          options: [{ id: "false", label: "Off" }],
+          value: false,
         },
       ];
     }
@@ -879,11 +878,10 @@ test("wrapped cursor client lists ACP features through the inner provider", asyn
     }),
   ).resolves.toEqual([
     {
-      type: "select",
-      id: "fast",
+      type: "toggle",
+      id: "fast_mode",
       label: "Fast",
-      value: "false",
-      options: [{ id: "false", label: "Off" }],
+      value: false,
     },
   ]);
   expect(mockState.cursorListFeaturesConfigs).toEqual([

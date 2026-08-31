@@ -17,8 +17,10 @@ const CURSOR_CLIENT_CAPABILITY_META = {
   parameterizedModelPicker: true,
 };
 
+// ACP's config option is `fast`; the feature id is `fast_mode` so Command Center
+// and the composer zap toggle treat Cursor the same as Codex/Claude.
 export const CURSOR_FAST_FEATURE_OPTION: ACPConfigFeatureOption = {
-  id: "fast",
+  id: "fast_mode",
   configId: "fast",
   label: "Fast",
   description: "Cursor fast mode",

@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import type { SpawnedACPProcess, SessionStateResponse } from "./acp-agent.js";
-import { CURSOR_FAST_FEATURE_OPTION, CursorACPAgentClient } from "./cursor-acp-agent.js";
+import { CursorACPAgentClient } from "./cursor-acp-agent.js";
 import { createTestLogger } from "../../../test-utils/test-logger.js";
 
 describe("CursorACPAgentClient model discovery", () => {
@@ -147,29 +147,13 @@ describe("CursorACPAgentClient model discovery", () => {
         value: false,
       },
       {
-        type: "select",
-        id: CURSOR_FAST_FEATURE_OPTION.id,
+        type: "toggle",
+        id: "fast_mode",
         label: "Fast",
         description: "Cursor fast mode",
         tooltip: "Select Cursor fast mode",
         icon: "zap",
-        value: "false",
-        options: [
-          {
-            id: "false",
-            label: "Off",
-            isDefault: true,
-            description: undefined,
-            metadata: undefined,
-          },
-          {
-            id: "true",
-            label: "Fast",
-            isDefault: false,
-            description: undefined,
-            metadata: undefined,
-          },
-        ],
+        value: false,
       },
     ]);
   });
