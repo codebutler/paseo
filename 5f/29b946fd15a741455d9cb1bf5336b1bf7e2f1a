@@ -1,0 +1,33 @@
+packages/server/src/server/agent/providers/cursor-acp-agent.test.ts
+  s_49113b5833aae9::t_f4dbe0eb0cbd13 4
+  s_49113b5833aae9::t_846e3f014b7bd2 150-151,156
+packages/server/src/server/agent/providers/acp-agent.test.ts
+  s_49113b5833aae9::t_621e61b4ab6e24 1642-1698
+  s_49113b5833aae9::t_c42e5b177e755b 44
+packages/server/src/server/agent/providers/acp-agent.ts
+  s_49113b5833aae9::t_d5390b2a528642 3119-3121
+  s_49113b5833aae9::t_14a85b2126cd54 727,731-762
+  s_49113b5833aae9::t_fff36e38af9c5b 763
+packages/server/src/server/agent/provider-registry.test.ts
+  s_49113b5833aae9::t_d93762da8abfb1 881-882,884
+  s_49113b5833aae9::t_51daa77922bc0d 414-415,417
+packages/server/src/server/agent/providers/cursor-acp-agent.ts
+  s_49113b5833aae9::t_d926abb3e12d94 23
+  s_49113b5833aae9::t_da8adecc5d7afa 20-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "5f29b946fd15a741455d9cb1bf5336b1bf7e2f1a",
+  "prompts": {},
+  "sessions": {
+    "s_49113b5833aae9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "e0ed9b39-c5cb-4cf5-9e78-e341da6f38d3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Eric Butler <eric@codebutler.com>"
+    }
+  }
+}
